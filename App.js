@@ -10,11 +10,11 @@ import {
 import { useFonts as useLato, Lato_400Regular } from "@expo-google-fonts/lato";
 import { Navigation } from "./src/infrastructure/navigation/index";
 import { FavouritesContextProvider } from "./src/services/favourites/favourites.context";
-import { getApps, initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useState } from "react";
-
-const firebaseApps = getApps();
+import { AuthenticationContextProvider } from "./src/services/authentication/authentication.context";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -26,20 +26,23 @@ const firebaseConfig = {
     appId: "1:818441927787:web:b28e4a54b816902de5052e",
 };
 
-if (!firebaseApps.length) {
-    initializeApp(firebaseConfig);
+let app;
+
+if (firebase.apps.length === 0) {
+  app = firebase.initializeApp(firebaseConfig)
+} else {
+  app = firebase.app();
 }
 
 export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const auth = getAuth();
+        const auth = firebase.auth();
         signInWithEmailAndPassword(auth, "abc@mail.com", "qwerty")
             .then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                console.log(user);
                 setIsAuthenticated(true);
             })
             .catch((error) => {
@@ -59,20 +62,18 @@ export default function App() {
         return null;
     }
 
-    if (!isAuthenticated) {
-        return null;
-    }
-    
     return (
         <>
             <ThemeProvider theme={theme}>
-                <FavouritesContextProvider>
-                    <LocationContextProvider>
-                        <RestaurantsContextProvider>
-                            <Navigation />
-                        </RestaurantsContextProvider>
-                    </LocationContextProvider>
-                </FavouritesContextProvider>
+                <AuthenticationContextProvider>
+                    <FavouritesContextProvider>
+                        <LocationContextProvider>
+                            <RestaurantsContextProvider>
+                                <Navigation />
+                            </RestaurantsContextProvider>
+                        </LocationContextProvider>
+                    </FavouritesContextProvider>
+                </AuthenticationContextProvider>
             </ThemeProvider>
             <ExpoStatusBar style="auto" />
         </>
