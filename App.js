@@ -1,20 +1,17 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { theme } from "./src/infrastructure/theme";
 import { ThemeProvider } from "styled-components";
-import { RestaurantsContextProvider } from "./src/services/restaurants/restaurants.context";
-import { LocationContextProvider } from "./src/services/location/location.context";
 import {
     useFonts as useOswald,
     Oswald_400Regular,
 } from "@expo-google-fonts/oswald";
 import { useFonts as useLato, Lato_400Regular } from "@expo-google-fonts/lato";
 import { Navigation } from "./src/infrastructure/navigation/index";
-import { FavouritesContextProvider } from "./src/services/favourites/favourites.context";
 import { useEffect, useState } from "react";
 import { AuthenticationContextProvider } from "./src/services/authentication/authentication.context";
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -29,9 +26,9 @@ const firebaseConfig = {
 let app;
 
 if (firebase.apps.length === 0) {
-  app = firebase.initializeApp(firebaseConfig)
+    app = firebase.initializeApp(firebaseConfig);
 } else {
-  app = firebase.app();
+    app = firebase.app();
 }
 
 export default function App() {
@@ -66,13 +63,7 @@ export default function App() {
         <>
             <ThemeProvider theme={theme}>
                 <AuthenticationContextProvider>
-                    <FavouritesContextProvider>
-                        <LocationContextProvider>
-                            <RestaurantsContextProvider>
-                                <Navigation />
-                            </RestaurantsContextProvider>
-                        </LocationContextProvider>
-                    </FavouritesContextProvider>
+                    <Navigation />
                 </AuthenticationContextProvider>
             </ThemeProvider>
             <ExpoStatusBar style="auto" />
